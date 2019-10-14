@@ -1,6 +1,6 @@
-package controllers;
+package app.xenovox.controllers;
 
-import entities.Message;
+import app.xenovox.entities.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MessageController {
     @MessageMapping("/chat")
-    @SendTo("/group")
+    @SendTo("/topic/group")
     public Message sendMessage(@Payload Message message) {
         return message;
     }
