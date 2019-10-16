@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Spring Boot WebSocket Chat Application</title>
+    <title>Xenovox Chat Client</title>
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
@@ -27,7 +27,8 @@
 <div id="chat-page" class="hidden">
     <div class="chat-container">
         <div class="chat-header">
-            <h2>Spring WebSocket Chat Demo</h2>
+            <button id="online-button" type="submit" class="primary">Online</button>
+            <h2>Xenovox Chat Client</h2>
         </div>
         <div class="connecting">
             Connecting...
@@ -46,8 +47,21 @@
     </div>
 </div>
 
+<div id="list-page" class="hidden">
+    <div class="list-container">
+        <div class="list-header">
+            <button id="back-button" type="submit" class="primary">Back</button>
+            <h2>Online Users</h2>
+        </div>
+        <ul id="listArea">
+
+        </ul>
+    </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
