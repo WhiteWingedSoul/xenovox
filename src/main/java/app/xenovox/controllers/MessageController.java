@@ -11,15 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @author: hd.viet
@@ -44,18 +46,24 @@ public class MessageController {
         return message;
     }
 
-    @RequestMapping("/messages")
+    @MessageMapping("/join")
+    @SendTo("/topic/group")
+    public Message joinRoom(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
+        userRepository.add(new User(message.getSender()));
+        headerAccessor.getSessionAttributes().put("username", message.getSender());
+
+        return message;
+    }
+
+    @GetMapping("/messages")
     public List<Message> getRecentMessage() {
         return messageRepository.getRecentMessages();
     }
 
-    @RequestMapping("/users")
+    @GetMapping("/users")
     public List<User> getOnlineUsers() {
         return userRepository.getOnlineUsers();
     }
 
-    @RequestMapping(value = "/join", method = RequestMethod.POST)
-    public void joinRoom(@RequestParam User user) {
-        userRepository.add(user);
-    }
+
 }

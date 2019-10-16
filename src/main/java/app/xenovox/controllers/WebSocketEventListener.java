@@ -1,6 +1,7 @@
 package app.xenovox.controllers;
 
 import app.xenovox.entities.Message;
+import app.xenovox.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +21,26 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 public class WebSocketEventListener {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
-    @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    @EventListener
-    public void onConnected(SessionConnectedEvent event) {
-        System.out.println("FUCK ALL I GOT INSIDE");
-//        SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-//        String username = headers.getUser().getName();
+    private UserRepository userRepository;
 
-        logger.info("Received a new web socket connection");
+    @Autowired
+    public WebSocketEventListener(SimpMessageSendingOperations messagingTemplate, UserRepository userRepository) {
+        this.messagingTemplate = messagingTemplate;
+        this.userRepository = userRepository;
     }
 
     @EventListener
     public void onDisconnected(SessionDisconnectEvent event) {
-        System.out.println("FUCK ALL I CAME OUTSIDe");
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         if(username != null) {
             logger.info("User Disconnected : " + username);
-            Message chatMessage = new Message(username, "", "LEAVE");
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+            Message message = new Message(username, "", "LEAVE");
+            messagingTemplate.convertAndSend("/topic/group", message);
+            userRepository.remove(username);
         }
     }
 }

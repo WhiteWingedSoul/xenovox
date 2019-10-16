@@ -3,10 +3,7 @@ package app.xenovox.repositories;
 import app.xenovox.entities.User;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: hd.viet
@@ -20,8 +17,14 @@ public class UserRepository {
         list.add(user);
     }
 
-    public void remove(User user) {
-        list.remove(user);
+    public void remove(String name) {
+        for (Iterator<User> iter = list.listIterator(); iter.hasNext(); ) {
+            User user = iter.next();
+            if (user.getName().equals(name)) {
+                iter.remove();
+                break;
+            }
+        }
     }
 
     public List<User> getOnlineUsers() {
