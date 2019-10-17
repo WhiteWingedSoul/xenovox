@@ -25,7 +25,7 @@ jobs: # a collection of steps
 
       - persist_to_workspace:
           root: .
-          paths: xenovox/build/libs
+          paths: build/libs
 
   deploy:
     docker:
