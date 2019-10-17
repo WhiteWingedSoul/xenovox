@@ -65,4 +65,8 @@ public class MessageController {
         return userRepository.getOnlineUsers();
     }
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "OK";
+    }
 }
