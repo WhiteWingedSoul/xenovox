@@ -1,0 +1,74 @@
+version: 2 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+
+    working_directory: ~/xenovox # directory where steps will run
+
+    docker: # run the steps with Docker
+      - image: circleci/openjdk:8-jdk-browsers
+
+    steps: # a collection of executable commands
+      - checkout # check out source code to working directory
+
+      - restore_cache: # restore the saved cache after the first run or if `build.gradle` has changed
+          key: jars-{{ checksum "build.gradle" }}
+
+      - run: ./gradlew dependencies # install dependencies to store in cache
+
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}
+
+      # TODO: Test to see if ./gradlew clean build --build-cache is viable or not
+      - run: ./gradlew clean build
+
+      - persist_to_workspace:
+          root: .
+          paths: xenovox/build/libs
+
+  deploy:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup_remote_docker
+      - run:
+          command: |
+            sudo pip install awscli
+            sudo pip install jq
+            aws --version
+      - run:
+          command: |
+            echo export AWS_DEFAULT_REGION="${PRODUCTION_REGION}" >> $BASH_ENV
+            echo export IMAGE_VERSION=$(ls -t build/libs/ | awk -F - 'NR==1{print $(NF-1)}') >> $BASH_ENV
+            export FILENAME=$(ls -1 -t build/libs/ | head -1)
+            mv build/libs/$FILENAME build/libs/xenovox-server.jar
+      - run:
+          command: eval $(aws ecr get-login --no-include-email | sed 's|https://||')
+      - run:
+          command: |
+            docker build -f Dockerfile.production -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_REPOSITORY_NAME:latest -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_REPOSITORY_NAME:$IMAGE_VERSION .
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_REPOSITORY_NAME:latest
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_REPOSITORY_NAME:$IMAGE_VERSION
+      - run:
+          command: ./deploy.sh web xenovox-server
+      - run:
+          command: aws s3 rm s3://xenovox-client --recursive
+      - run:
+          command: |
+            aws s3 sync src/resources/static s3://xenovox-client
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

@@ -65,5 +65,4 @@ public class MessageController {
         return userRepository.getOnlineUsers();
     }
 
-
 }

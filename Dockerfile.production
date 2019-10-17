@@ -1,0 +1,11 @@
+# Use the official JDK image as the parent image
+FROM openjdk:8-jdk-alpine
+
+# Set the working directory to /app inside the container
+WORKDIR /app
+
+# Copy jar file to working directory
+COPY ./build/libs/xenovox-server.jar /app/xenovox-server.jar
+
+# Run ./gradlew run when container launches
+CMD ["java", "-Dspring.profiles.active=production", "-jar", "xenovox-server.jar"]
