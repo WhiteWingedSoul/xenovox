@@ -15,7 +15,7 @@ var backButton = document.querySelector('#back-button');
 var stompClient = null;
 var username = null;
 
-const DOMAIN = "http://localhost:8080"
+const DOMAIN = "http://web-lb-790242101.ap-northeast-1.elb.amazonaws.com"
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
