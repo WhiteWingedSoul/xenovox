@@ -1,33 +1,17 @@
 package app.xenovox.repositories;
 
+import app.xenovox.entities.Message;
 import app.xenovox.entities.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author: hd.viet
- * @date: 2019/10/16 9:07
+ * @date: 2019/10/18 8:30
  **/
-@Component
-public class UserRepository {
-    private List<User> list = new ArrayList<>();
-
-    public void add(User user) {
-        list.add(user);
-    }
-
-    public void remove(String name) {
-        for (Iterator<User> iter = list.listIterator(); iter.hasNext(); ) {
-            User user = iter.next();
-            if (user.getName().equals(name)) {
-                iter.remove();
-                break;
-            }
-        }
-    }
-
-    public List<User> getOnlineUsers() {
-        return list;
-    }
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
 }

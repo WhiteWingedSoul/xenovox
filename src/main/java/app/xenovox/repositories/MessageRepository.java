@@ -1,28 +1,17 @@
 package app.xenovox.repositories;
 
 import app.xenovox.entities.Message;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author: hd.viet
- * @date: 2019/10/16 7:26
+ * @date: 2019/10/18 8:30
  **/
-@Component
-public class MessageRepository {
-    private List<Message> list = new ArrayList<>();
-    private static final int MSG_LIMIT = 100;
-
-    public void add(Message message) {
-        while(list.size() >= MSG_LIMIT) {
-            list.remove(0);
-        }
-        list.add(message);
-    }
-
-    public List<Message> getRecentMessages() {
-        return list;
-    }
+@Repository
+public interface MessageRepository extends MongoRepository<Message, String> {
 }

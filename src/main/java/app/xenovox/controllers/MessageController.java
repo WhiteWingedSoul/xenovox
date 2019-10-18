@@ -5,23 +5,15 @@ import app.xenovox.entities.User;
 import app.xenovox.repositories.MessageRepository;
 import app.xenovox.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @author: hd.viet
@@ -42,14 +34,14 @@ public class MessageController {
     @MessageMapping("/chat")
     @SendTo("/topic/group")
     public Message sendMessage(@Payload Message message) {
-        messageRepository.add(message);
+        messageRepository.save(message);
         return message;
     }
 
     @MessageMapping("/join")
     @SendTo("/topic/group")
     public Message joinRoom(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
-        userRepository.add(new User(message.getSender()));
+        userRepository.save(new User(headerAccessor.getSessionId(), message.getSender()));
         headerAccessor.getSessionAttributes().put("username", message.getSender());
 
         return message;
@@ -57,12 +49,12 @@ public class MessageController {
 
     @GetMapping("/messages")
     public List<Message> getRecentMessage() {
-        return messageRepository.getRecentMessages();
+        return messageRepository.findAll(new PageRequest(0, 100, Sort.Direction.DESC, "createDate")).getContent();
     }
 
     @GetMapping("/users")
     public List<User> getOnlineUsers() {
-        return userRepository.getOnlineUsers();
+        return userRepository.findAll();
     }
 
     @GetMapping("/ping")

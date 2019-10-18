@@ -5,4 +5,4 @@ FROM openjdk:8-jdk-alpine
 WORKDIR /app
 
 # Run ./gradlew run when container launches
-CMD ["./gradlew", "clean", "run"]
+CMD ["./gradlew", "clean", "bootRun"]

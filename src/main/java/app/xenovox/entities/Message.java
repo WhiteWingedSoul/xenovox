@@ -1,10 +1,18 @@
 package app.xenovox.entities;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
+
 /**
  * @author: hd.viet
  * @date: 2019/10/14 16:29
  **/
+@Document("recent_messages")
 public class Message {
+    @Id
+    private String id;
     private String sender;
     private String content;
     private String type;

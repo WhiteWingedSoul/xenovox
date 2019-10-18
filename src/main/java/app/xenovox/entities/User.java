@@ -1,15 +1,22 @@
 package app.xenovox.entities;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Objects;
 
 /**
  * @author: hd.viet
  * @date: 2019/10/16 13:13
  **/
+@Document("online_users")
 public class User {
+    @Id
+    private String userId;
     private String name;
 
-    public User(String name) {
+    public User(String userId, String name) {
+        this.userId = userId;
         this.name = name;
     }
 
@@ -19,6 +26,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override
