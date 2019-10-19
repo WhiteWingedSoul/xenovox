@@ -22,7 +22,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     private int port;
     @Value("${RABBITMQ_USER}")
     private String user;
-    @Value("${RABBITMQ_PASSWORDT}")
+    @Value("${RABBITMQ_PASSWORD}")
     private String password;
 
     @Override
