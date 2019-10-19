@@ -1,5 +1,6 @@
 package app.xenovox.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -15,10 +16,23 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${RABBITMQ_HOST}")
+    private String host;
+    @Value("${RABBITMQ_PORT}")
+    private int port;
+    @Value("${RABBITMQ_USER}")
+    private String user;
+    @Value("${RABBITMQ_PASSWORDT}")
+    private String password;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app")
-                .enableSimpleBroker("/topic");
+                .enableStompBrokerRelay("/topic")
+                .setRelayHost(host)
+                .setRelayPort(port)
+                .setClientLogin(user)
+                .setClientPasscode(password);
     }
 
     @Override
